@@ -1,7 +1,8 @@
-let balance = document.getElementById("balance");
-let income = document.getElementById("income");
-let expense = document.getElementById("expense");
-let list = document.getElementById("list");
+
+const balance = document.getElementById("balance");
+const income = document.getElementById("income");
+const expense = document.getElementById("expense");
+const list = document.getElementById("list");
 
 let total = 0;
 let inc = 0;
@@ -19,6 +20,7 @@ return;
 
 let li = document.createElement("li");
 li.innerText = text + " : ₹" + amount;
+
 list.appendChild(li);
 
 if(amount > 0){
@@ -35,4 +37,5 @@ expense.innerText = "₹" + exp;
 
 document.getElementById("text").value = "";
 document.getElementById("amount").value = "";
+
 }
