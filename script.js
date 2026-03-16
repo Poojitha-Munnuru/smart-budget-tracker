@@ -1,60 +1,38 @@
-const balance = document.getElementById("balance");
-const income = document.getElementById("income");
-const expense = document.getElementById("expense");
-const list = document.getElementById("list");
+let balance = document.getElementById("balance");
+let income = document.getElementById("income");
+let expense = document.getElementById("expense");
+let list = document.getElementById("list");
 
-let transactions = [];
+let total = 0;
+let inc = 0;
+let exp = 0;
 
-function addTransaction(){
+function addTransaction() {
 
-const text = document.getElementById("text").value;
-const amount = parseInt(document.getElementById("amount").value);
+let text = document.getElementById("text").value;
+let amount = Number(document.getElementById("amount").value);
 
-if(text === "" || isNaN(amount)){
+if(text === "" || amount === 0){
 alert("Enter description and amount");
 return;
 }
 
-const transaction = {
-text:text,
-amount:amount
-};
-
-transactions.push(transaction);
-
-const li = document.createElement("li");
-
-li.innerHTML = `${text} : ₹${amount}`;
-
+let li = document.createElement("li");
+li.innerText = text + " : ₹" + amount;
 list.appendChild(li);
 
-updateValues();
-
-document.getElementById("text").value="";
-document.getElementById("amount").value="";
-
-}
-
-function updateValues(){
-
-let total=0;
-let inc=0;
-let exp=0;
-
-transactions.forEach(t=>{
-
-total += t.amount;
-
-if(t.amount>0){
-inc += t.amount;
+if(amount > 0){
+inc += amount;
 }else{
-exp += t.amount;
+exp += Math.abs(amount);
 }
 
-});
+total = inc - exp;
 
-balance.innerText="₹"+total;
-income.innerText="₹"+inc;
-expense.innerText="₹"+Math.abs(exp);
+balance.innerText = "₹" + total;
+income.innerText = "₹" + inc;
+expense.innerText = "₹" + exp;
 
+document.getElementById("text").value = "";
+document.getElementById("amount").value = "";
 }
