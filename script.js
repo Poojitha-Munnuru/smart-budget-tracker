@@ -1,24 +1,19 @@
-let balance = 0;
+const balance = document.getElementById("balance");
+const money_plus = document.getElementById("money-plus");
+const money_minus = document.getElementById("money-minus");
+const form = document.getElementById("form");
+const list = document.getElementById("list");
 
-function addTransaction(){
+form.addEventListener("submit", addTransaction);
 
-let text = document.getElementById("text").value;
-let amount = Number(document.getElementById("amount").value);
+function addTransaction(e) {
+  e.preventDefault();
 
-if(text === "" || amount === 0){
-alert("Please enter valid data");
-return;
-}
+  const text = document.getElementById("text").value;
+  const amount = +document.getElementById("amount").value;
 
-balance += amount;
+  const li = document.createElement("li");
+  li.innerHTML = `${text} <span>${amount}</span>`;
 
-document.getElementById("balance").innerText = "₹" + balance;
-
-let li = document.createElement("li");
-li.innerText = text + " : ₹" + amount;
-
-document.getElementById("list").appendChild(li);
-
-document.getElementById("text").value="";
-document.getElementById("amount").value="";
+  list.appendChild(li);
 }
