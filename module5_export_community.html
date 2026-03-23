@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Export & Community — FinTrack</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --surface: #1a1916;
+    --surface2: #232118;
+    --border: #2e2c27;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: rgba(201,168,76,0.12);
+    --green: #4caf7d;
+    --red: #e05a5a;
+    --text: #f0ece2;
+    --text-dim: #7d7a6f;
+    --text-mid: #b5b09f;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient glow */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ── Layout ── */
+  .shell {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 32px 0;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+
+  .logo {
+    padding: 0 24px 32px;
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: var(--gold);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 0 24px 10px;
+    margin-top: 12px;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 24px;
+    cursor: pointer;
+    color: var(--text-mid);
+    font-size: 14px;
+    font-weight: 400;
+    transition: all 0.18s;
+    border-left: 3px solid transparent;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: var(--gold-dim); color: var(--text); }
+  .nav-item.active {
+    background: var(--gold-dim);
+    color: var(--gold);
+    border-left-color: var(--gold);
+  }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold) 0%, #7a5c1e 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f0e0c;
+    flex-shrink: 0;
+  }
+  .user-info { flex: 1; overflow: hidden; }
+  .user-name { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 11px; color: var(--text-dim); }
+
+  /* ── Main ── */
+  .main {
+    padding: 40px 48px;
+    overflow-y: auto;
+  }
+
+  .page-header {
+    margin-bottom: 36px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+  .page-subtitle {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-top: 6px;
+    font-weight: 300;
+  }
+
+  /* ── Section titles ── */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: #3e3b33; }
+
+  /* ── Export Section ── */
+  .export-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .export-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s;
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+  }
+  .export-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--gold-dim), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .export-btn:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201,168,76,0.08);
+  }
+  .export-btn:hover::before { opacity: 1; }
+  .export-btn:active { transform: translateY(0); }
+
+  .export-icon {
+    width: 44px; height: 44px;
+    background: var(--gold-dim);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    position: relative; z-index: 1;
+  }
+  .export-info { position: relative; z-index: 1; }
+  .export-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .export-desc { font-size: 12px; color: var(--text-dim); font-weight: 300; }
+
+  .export-badge {
+    margin-left: auto;
+    background: var(--gold-dim);
+    color: var(--gold);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 20px;
+    border: 1px solid rgba(201,168,76,0.2);
+    position: relative; z-index: 1;
+  }
+
+  /* ── Backup Section ── */
+  .backup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .backup-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: border-color 0.2s;
+  }
+  .backup-card:hover { border-color: #3e3b33; }
+
+  .backup-left { display: flex; align-items: center; gap: 14px; }
+  .backup-icon { font-size: 24px; }
+  .backup-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .backup-status { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  .backup-status .dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+
+  .toggle-switch {
+    width: 44px; height: 24px;
+    background: var(--green);
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle-switch.off { background: var(--border); }
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 18px; height: 18px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .toggle-switch.off::after { transform: translateX(0); }
+  .toggle-switch:not(.off)::after { transform: translateX(20px); }
+
+  /* ── Last backup info ── */
+  .backup-meta {
+    display: flex; gap: 12px;
+    margin-bottom: 32px;
+  }
+  .meta-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: var(--text-mid);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .meta-pill span { color: var(--text); font-weight: 500; }
+
+  /* ── Forum ── */
+  .forum-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .forum-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 4px;
+  }
+  .tab-btn {
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    color: var(--text-dim);
+    border: none;
+    background: transparent;
+    transition: all 0.15s;
+  }
+  .tab-btn.active {
+    background: var(--gold-dim);
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .tab-btn:hover:not(.active) { color: var(--text); }
+
+  .new-post-btn {
+    background: var(--gold);
+    color: #0f0e0c;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 9px 18px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.2s;
+  }
+  .new-post-btn:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(201,168,76,0.25);
+  }
+
+  /* ── Post Cards ── */
+  .post-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .post-card:hover {
+    border-color: #3e3b33;
+    transform: translateX(4px);
+  }
+
+  .post-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .post-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: #0f0e0c;
+  }
+  .av1 { background: linear-gradient(135deg, #c9a84c, #7a5c1e); }
+  .av2 { background: linear-gradient(135deg, #4caf7d, #1e5c3a); color: #0f0e0c; }
+  .av3 { background: linear-gradient(135deg, #7c6af0, #3a2ea8); color: white; }
+  .av4 { background: linear-gradient(135deg, #e08a5a, #8a3e1e); color: white; }
+  .av5 { background: linear-gradient(135deg, #5ab8e0, #1e5c8a); color: white; }
+
+  .post-meta { flex: 1; }
+  .post-author {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .post-time { font-size: 12px; color: var(--text-dim); margin-top: 1px; }
+
+  .post-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+  .tag-tip { background: rgba(76,175,125,0.12); color: var(--green); border: 1px solid rgba(76,175,125,0.2); }
+  .tag-question { background: rgba(201,168,76,0.12); color: var(--gold); border: 1px solid rgba(201,168,76,0.2); }
+  .tag-goal { background: rgba(124,106,240,0.12); color: #a89ff5; border: 1px solid rgba(124,106,240,0.2); }
+  .tag-news { background: rgba(224,90,90,0.12); color: #e87c7c; border: 1px solid rgba(224,90,90,0.2); }
+
+  .post-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 7px;
+    line-height: 1.35;
+  }
+  .post-body {
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.65;
+    font-weight: 300;
+    margin-bottom: 14px;
+  }
+
+  .post-footer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .reaction-btn {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--text-dim);
+    font-size: 13px;
+    cursor: pointer;
+    transition: color 0.15s;
+    background: none; border: none;
+    padding: 0;
+  }
+  .reaction-btn:hover { color: var(--gold); }
+  .reaction-btn.liked { color: var(--gold); }
+
+  .reply-area {
+    display: none;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .reply-area.open { display: block; }
+
+  /* ── Reply thread ── */
+  .reply-thread {
+    margin-left: 24px;
+    padding-left: 20px;
+    border-left: 2px solid var(--border);
+    margin-top: 12px;
+  }
+  .reply-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .reply-av {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: #0f0e0c;
+  }
+  .reply-bubble {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    flex: 1;
+  }
+  .reply-author {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .reply-time { font-size: 10px; color: var(--text-dim); font-family: 'DM Sans', sans-serif; font-weight: 300; }
+  .reply-text { font-size: 12px; color: var(--text-mid); line-height: 1.6; font-weight: 300; }
+
+  /* ── New reply input ── */
+  .reply-input-row {
+    display: flex; gap: 10px; margin-top: 14px;
+  }
+  .reply-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .reply-input::placeholder { color: var(--text-dim); }
+  .reply-input:focus { border-color: var(--gold); }
+
+  .reply-send {
+    background: var(--gold);
+    color: #0f0e0c;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .reply-send:hover { background: var(--gold-light); }
+
+  /* ── New post modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(15,14,12,0.85);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 32px;
+    width: 520px;
+    max-width: calc(100vw - 40px);
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  .field-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    margin-top: 16px;
+  }
+  .field-label:first-of-type { margin-top: 0; }
+
+  .field-input, .field-select, .field-textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 11px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field-input::placeholder,
+  .field-textarea::placeholder { color: var(--text-dim); }
+  .field-input:focus, .field-select:focus, .field-textarea:focus { border-color: var(--gold); }
+  .field-select { appearance: none; cursor: pointer; }
+  .field-textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+
+  .modal-footer {
+    display: flex; gap: 10px; margin-top: 22px;
+  }
+  .btn-cancel {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 11px;
+    color: var(--text-mid);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-cancel:hover { border-color: #3e3b33; color: var(--text); }
+  .btn-post {
+    flex: 2;
+    background: var(--gold);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 11px;
+    color: #0f0e0c;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-post:hover { background: var(--gold-light); box-shadow: 0 4px 16px rgba(201,168,76,0.3); }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    background: var(--surface);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius-sm);
+    padding: 14px 20px;
+    font-size: 13px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 200;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-icon { font-size: 18px; }
+
+  /* ── Bottom nav (mobile hint) ── */
+  @media (max-width: 768px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 24px 20px; }
+    .export-grid, .backup-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── Animations ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeInUp 0.4s ease forwards;
+  }
+  @keyframes fadeInUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in:nth-child(1) { animation-delay: 0.05s; }
+  .fade-in:nth-child(2) { animation-delay: 0.1s; }
+  .fade-in:nth-child(3) { animation-delay: 0.15s; }
+  .fade-in:nth-child(4) { animation-delay: 0.2s; }
+  .fade-in:nth-child(5) { animation-delay: 0.25s; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">💰</div>
+      FinTrack
+    </div>
+
+    <div class="nav-label">Navigation</div>
+    <a class="nav-item" href="#"><span class="nav-icon">🏠</span> Dashboard</a>
+    <a class="nav-item" href="#"><span class="nav-icon">↕️</span> Transactions</a>
+    <a class="nav-item" href="#"><span class="nav-icon">🎯</span> Budget</a>
+    <a class="nav-item" href="#"><span class="nav-icon">📈</span> Trends</a>
+    <a class="nav-item active" href="#"><span class="nav-icon">🌐</span> Export & Forum</a>
+
+    <div class="nav-label">Account</div>
+    <a class="nav-item" href="#"><span class="nav-icon">👤</span> Profile</a>
+    <a class="nav-item" href="#"><span class="nav-icon">⚙️</span> Settings</a>
+
+    <div class="sidebar-footer">
+      <div class="avatar">AK</div>
+      <div class="user-info">
+        <div class="user-name">Arjun Kumar</div>
+        <div class="user-role">Free Plan</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <div class="page-header fade-in">
+      <div>
+        <div class="page-title">Export & Community</div>
+        <div class="page-subtitle">Download your data, sync to the cloud, and connect with fellow savers</div>
+      </div>
+    </div>
+
+    <!-- Export Section -->
+    <div class="section-title fade-in">Export Data</div>
+    <div class="export-grid fade-in">
+      <button class="export-btn" onclick="triggerExport('PDF')">
+        <div class="export-icon">📄</div>
+        <div class="export-info">
+          <div class="export-label">Export to PDF</div>
+          <div class="export-desc">Full financial report with charts</div>
+        </div>
+        <div class="export-badge">↓ PDF</div>
+      </button>
+      <button class="export-btn" onclick="triggerExport('CSV')">
+        <div class="export-icon">📊</div>
+        <div class="export-info">
+          <div class="export-label">Export to CSV</div>
+          <div class="export-desc">Raw transaction data for spreadsheets</div>
+        </div>
+        <div class="export-badge">↓ CSV</div>
+      </button>
+    </div>
+
+    <!-- Backup Section -->
+    <div class="section-title fade-in">Cloud Backup</div>
+    <div class="backup-grid fade-in">
+      <div class="backup-card">
+        <div class="backup-left">
+          <div class="backup-icon">☁️</div>
+          <div>
+            <div class="backup-name">Google Drive</div>
+            <div class="backup-status"><span class="dot"></span>Connected · Auto-sync on</div>
+          </div>
+        </div>
+        <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+      </div>
+      <div class="backup-card">
+        <div class="backup-left">
+          <div class="backup-icon">📦</div>
+          <div>
+            <div class="backup-name">Dropbox</div>
+            <div class="backup-status" id="dropbox-status">Not connected</div>
+          </div>
+        </div>
+        <div class="toggle-switch off" onclick="toggleSwitch(this, 'dropbox-status')"></div>
+      </div>
+    </div>
+
+    <div class="backup-meta fade-in">
+      <div class="meta-pill">🕐 Last backup: <span>Today, 11:42 AM</span></div>
+      <div class="meta-pill">📁 Backup size: <span>1.4 MB</span></div>
+      <div class="meta-pill">🔁 Frequency: <span>Daily</span></div>
+    </div>
+
+    <!-- Community Forum -->
+    <div class="section-title fade-in">Community Forum</div>
+
+    <div class="forum-toolbar fade-in">
+      <div class="forum-tabs">
+        <button class="tab-btn active" onclick="switchTab(this, 'trending')">🔥 Trending</button>
+        <button class="tab-btn" onclick="switchTab(this, 'latest')">🕐 Latest</button>
+        <button class="tab-btn" onclick="switchTab(this, 'mine')">👤 My Posts</button>
+      </div>
+      <button class="new-post-btn" onclick="openModal()">
+        ✏️ New Post
+      </button>
+    </div>
+
+    <!-- Posts -->
+    <div id="posts-container">
+
+      <div class="post-card fade-in">
+        <div class="post-header">
+          <div class="post-avatar av1">EC</div>
+          <div class="post-meta">
+            <div class="post-author">Ethan Carter</div>
+            <div class="post-time">2 days ago</div>
+          </div>
+          <div class="post-tag tag-question">Question</div>
+        </div>
+        <div class="post-title">Just hit a new savings milestone! Tips on maximizing returns with low-risk investments?</div>
+        <div class="post-body">Crossed ₹1,00,000 in savings this month — really excited! Now looking for safe ways to grow this. Been considering fixed deposits and government bonds. Any suggestions?</div>
+        <div class="post-footer">
+          <button class="reaction-btn liked" onclick="toggleLike(this, 15)">👍 <span>15</span></button>
+          <button class="reaction-btn" onclick="toggleComments(this)">💬 <span>2 replies</span></button>
+          <button class="reaction-btn" onclick="sharePost()">🔗 Share</button>
+        </div>
+        <div class="reply-area">
+          <div class="reply-thread">
+            <div class="reply-item">
+              <div class="reply-av av2">SB</div>
+              <div class="reply-bubble">
+                <div class="reply-author">Sophia Bennett <span class="reply-time">1 day ago</span></div>
+                <div class="reply-text">Congrats, Ethan! Consider high-yield savings accounts or short-term government bonds for a balance of safety and growth.</div>
+              </div>
+            </div>
+            <div class="reply-item">
+              <div class="reply-av av3">RK</div>
+              <div class="reply-bubble">
+                <div class="reply-author">Ravi Kapoor <span class="reply-time">18 hrs ago</span></div>
+                <div class="reply-text">SBI FDs at 7.1% for senior citizens, or PPF for long term tax-free growth — both solid options!</div>
+              </div>
+            </div>
+          </div>
+          <div class="reply-input-row">
+            <input class="reply-input" placeholder="Write a reply…" />
+            <button class="reply-send" onclick="sendReply(this)">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-card fade-in">
+        <div class="post-header">
+          <div class="post-avatar av4">LH</div>
+          <div class="post-meta">
+            <div class="post-author">Liam Harper</div>
+            <div class="post-time">3 days ago</div>
+          </div>
+          <div class="post-tag tag-tip">Tip</div>
+        </div>
+        <div class="post-title">Struggling with impulse spending — trying to cut back on non-essentials</div>
+        <div class="post-body">Every time I set a budget, I end up overspending on things I don't need. Eating out, online shopping… it adds up fast. Looking for accountability strategies that actually work.</div>
+        <div class="post-footer">
+          <button class="reaction-btn" onclick="toggleLike(this, 22)">👍 <span>22</span></button>
+          <button class="reaction-btn" onclick="toggleComments(this)">💬 <span>3 replies</span></button>
+          <button class="reaction-btn" onclick="sharePost()">🔗 Share</button>
+        </div>
+        <div class="reply-area">
+          <div class="reply-thread">
+            <div class="reply-item">
+              <div class="reply-av av5">OH</div>
+              <div class="reply-bubble">
+                <div class="reply-author">Olivia Hayes <span class="reply-time">2 days ago</span></div>
+                <div class="reply-text">Try the 30-day rule: wait a month before buying anything non-essential. It really helps curb impulse buys!</div>
+              </div>
+            </div>
+          </div>
+          <div class="reply-input-row">
+            <input class="reply-input" placeholder="Write a reply…" />
+            <button class="reply-send" onclick="sendReply(this)">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-card fade-in">
+        <div class="post-header">
+          <div class="post-avatar av3">PM</div>
+          <div class="post-meta">
+            <div class="post-author">Priya Mehta</div>
+            <div class="post-time">5 days ago</div>
+          </div>
+          <div class="post-tag tag-goal">Goal</div>
+        </div>
+        <div class="post-title">How I paid off ₹3L of credit card debt in 8 months using the debt snowball method</div>
+        <div class="post-body">It wasn't easy, but listing smallest balances first and getting quick wins kept me motivated. Sharing my full breakdown so others can replicate it. AMA!</div>
+        <div class="post-footer">
+          <button class="reaction-btn liked" onclick="toggleLike(this, 47)">👍 <span>47</span></button>
+          <button class="reaction-btn" onclick="toggleComments(this)">💬 <span>11 replies</span></button>
+          <button class="reaction-btn" onclick="sharePost()">🔗 Share</button>
+        </div>
+        <div class="reply-area">
+          <div class="reply-thread">
+            <div class="reply-item">
+              <div class="reply-av av1">EC</div>
+              <div class="reply-bubble">
+                <div class="reply-author">Ethan Carter <span class="reply-time">4 days ago</span></div>
+                <div class="reply-text">This is super inspiring, Priya! What was your average monthly payment toward the debt?</div>
+              </div>
+            </div>
+          </div>
+          <div class="reply-input-row">
+            <input class="reply-input" placeholder="Write a reply…" />
+            <button class="reply-send" onclick="sendReply(this)">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-card fade-in">
+        <div class="post-header">
+          <div class="post-avatar av5">NK</div>
+          <div class="post-meta">
+            <div class="post-author">Neha Kulkarni</div>
+            <div class="post-time">1 week ago</div>
+          </div>
+          <div class="post-tag tag-news">Discussion</div>
+        </div>
+        <div class="post-title">Best free budgeting methods? 50/30/20 vs Zero-based vs Envelope</div>
+        <div class="post-body">Tried 50/30/20 for 3 months and found it too rigid for variable income. Considering zero-based next. What's everyone's experience?</div>
+        <div class="post-footer">
+          <button class="reaction-btn" onclick="toggleLike(this, 33)">👍 <span>33</span></button>
+          <button class="reaction-btn" onclick="toggleComments(this)">💬 <span>8 replies</span></button>
+          <button class="reaction-btn" onclick="sharePost()">🔗 Share</button>
+        </div>
+        <div class="reply-area">
+          <div class="reply-input-row">
+            <input class="reply-input" placeholder="Write a reply…" />
+            <button class="reply-send" onclick="sendReply(this)">Send</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- New Post Modal -->
+<div class="modal-overlay" id="modal" onclick="closeOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-title">
+      New Post ✏️
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="field-label">Category</div>
+    <select class="field-select">
+      <option value="">Select a tag…</option>
+      <option>💡 Tip</option>
+      <option>❓ Question</option>
+      <option>🎯 Goal</option>
+      <option>💬 Discussion</option>
+    </select>
+
+    <div class="field-label">Title</div>
+    <input class="field-input" placeholder="What's your post about?" id="post-title-input" />
+
+    <div class="field-label">Content</div>
+    <textarea class="field-textarea" placeholder="Share your thoughts, tips, or questions with the community…" id="post-body-input"></textarea>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-post" onclick="submitPost()">🚀 Publish Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✅</span>
+  <span id="toast-msg">Done!</span>
+</div>
+
+<script>
+  function showToast(msg, icon = '✅') {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    document.getElementById('toast-icon').textContent = icon;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function triggerExport(type) {
+    showToast(`Exporting your data as ${type}…`, type === 'PDF' ? '📄' : '📊');
+    setTimeout(() => showToast(`${type} downloaded successfully!`, '✅'), 1800);
+  }
+
+  function toggleSwitch(el, statusId) {
+    el.classList.toggle('off');
+    if (statusId) {
+      const s = document.getElementById(statusId);
+      if (el.classList.contains('off')) {
+        s.innerHTML = 'Not connected';
+      } else {
+        s.innerHTML = '<span class="dot"></span>Connected · Auto-sync on';
+        showToast('Dropbox connected! Syncing…', '📦');
+      }
+    } else {
+      if (el.classList.contains('off')) {
+        showToast('Google Drive sync disabled', '☁️');
+      } else {
+        showToast('Google Drive sync enabled', '✅');
+      }
+    }
+  }
+
+  function toggleLike(btn, base) {
+    btn.classList.toggle('liked');
+    const s = btn.querySelector('span');
+    const cur = parseInt(s.textContent);
+    s.textContent = btn.classList.contains('liked') ? base + 1 : base;
+  }
+
+  function toggleComments(btn) {
+    const card = btn.closest('.post-card');
+    const area = card.querySelector('.reply-area');
+    area.classList.toggle('open');
+  }
+
+  function sharePost() {
+    showToast('Link copied to clipboard!', '🔗');
+  }
+
+  function sendReply(btn) {
+    const row = btn.closest('.reply-input-row');
+    const input = row.querySelector('.reply-input');
+    if (!input.value.trim()) return;
+    const thread = row.closest('.reply-area').querySelector('.reply-thread') ||
+      (() => {
+        const t = document.createElement('div');
+        t.className = 'reply-thread';
+        row.before(t);
+        return t;
+      })();
+
+    const div = document.createElement('div');
+    div.className = 'reply-item';
+    div.innerHTML = `
+      <div class="reply-av av1" style="background: linear-gradient(135deg, #c9a84c, #7a5c1e)">AK</div>
+      <div class="reply-bubble">
+        <div class="reply-author">You <span class="reply-time">Just now</span></div>
+        <div class="reply-text">${input.value}</div>
+      </div>
+    `;
+    thread.appendChild(div);
+    input.value = '';
+    showToast('Reply posted!', '💬');
+  }
+
+  function openModal() {
+    document.getElementById('modal').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+  }
+  function closeOnOverlay(e) {
+    if (e.target.id === 'modal') closeModal();
+  }
+
+  function submitPost() {
+    const title = document.getElementById('post-title-input').value.trim();
+    const body = document.getElementById('post-body-input').value.trim();
+    if (!title) { showToast('Please add a title!', '⚠️'); return; }
+
+    const card = document.createElement('div');
+    card.className = 'post-card';
+    card.innerHTML = `
+      <div class="post-header">
+        <div class="post-avatar av1">AK</div>
+        <div class="post-meta">
+          <div class="post-author">Arjun Kumar</div>
+          <div class="post-time">Just now</div>
+        </div>
+        <div class="post-tag tag-question">Question</div>
+      </div>
+      <div class="post-title">${title}</div>
+      <div class="post-body">${body || 'No description provided.'}</div>
+      <div class="post-footer">
+        <button class="reaction-btn" onclick="toggleLike(this, 0)">👍 <span>0</span></button>
+        <button class="reaction-btn" onclick="toggleComments(this)">💬 <span>0 replies</span></button>
+        <button class="reaction-btn" onclick="sharePost()">🔗 Share</button>
+      </div>
+      <div class="reply-area">
+        <div class="reply-thread"></div>
+        <div class="reply-input-row">
+          <input class="reply-input" placeholder="Write a reply…" />
+          <button class="reply-send" onclick="sendReply(this)">Send</button>
+        </div>
+      </div>
+    `;
+
+    const container = document.getElementById('posts-container');
+    container.prepend(card);
+    closeModal();
+    document.getElementById('post-title-input').value = '';
+    document.getElementById('post-body-input').value = '';
+    showToast('Post published!', '🚀');
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function switchTab(btn, tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    showToast(`Showing ${tab} posts`, tab === 'trending' ? '🔥' : tab === 'latest' ? '🕐' : '👤');
+  }
+</script>
+</body>
+</html>
